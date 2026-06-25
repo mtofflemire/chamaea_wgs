@@ -1,0 +1,16 @@
+#!/bin/bash
+#PBS -V
+#PBS -N LDdecay.chamaea
+#PBS -l nodes=1:ppn=20,mem=128gb,walltime=72:00:00
+#PBS -q batch
+#PBS -j oe
+#PBS -o /usr/scratch2/userdata2/mtofflemire/projects/chamaea/LD_DECAY_analysis/chamaea_PopLDdecay.log
+
+set -euo pipefail
+
+cd /usr/scratch2/userdata2/mtofflemire/projects/chamaea/LD_DECAY_analysis
+
+./PopLDdecay/bin/PopLDdecay \
+    -InVCF Chamaea_autoALL_filteredQC_maf0.05_miss0.25.vcf.gz \
+    -MaxDist 50 \
+    -OutStat chamaea_poplddecay

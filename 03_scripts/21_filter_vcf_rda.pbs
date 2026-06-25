@@ -1,0 +1,8 @@
+# Input/output VCF files
+INVCF='/Users/michaeltofflemire/Mtofflemire Dropbox/Michael Tofflemire/Projects/ccgp_chamaea/data/Chamaea_autoALL_filteredQC.vcf.gz'
+OUT='/Users/michaeltofflemire/Mtofflemire Dropbox/Michael Tofflemire/Projects/ccgp_chamaea/data/Chamaea_autoALL_filteredQC_maf0.05_miss0.25.vcf.gz'
+
+
+# Keep only biallelic SNPs with MAF >= 0.05 and <=25% missing data
+bcftools view -v snps -m2 -M2 -i 'MAF[0]>=0.05 && F_MISSING<=0.25' "$INVCF" \
+  -Oz -o "$OUT"

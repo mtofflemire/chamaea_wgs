@@ -1,0 +1,22 @@
+#!/bin/sh
+#PBS -V
+#PBS -l nodes=1:ppn=20  # Request 12 cores
+#PBS -l mem=128gb        # Allocate 64GB of memory
+#PBS -l walltime=500:00:00  # Set max runtime (72 hours)
+#PBS -N chamaea_iqtree  # Job name
+#PBS -j oe               # Merge stdout and stderr into a single file
+#PBS -M mtofflemire@sdsu.edu   # Email notifications (if needed)
+#PBS -q batch            # Submit to the batch queue
+#PBS -o /usr/scratch2/userdata2/mtofflemire/projects/california_birds_wgs/out/iqtree/chamaea.iqtree.log  # Output log
+
+# Change to the working directory
+cd $PBS_O_WORKDIR
+
+# Run IQ-TREE with the correct paths
+#need to varsites file
+/usr/scratch2/userdata2/mtofflemire/projects/chamaea_wgs/systems/iqtree-2.2.2.7-Linux/bin/iqtree2 \
+  -s /usr/scratch2/userdata2/mtofflemire/projects/california_birds_wgs/data/chamaea/Chamaea.outgroup.final.pruned.min4.phy.varsites.phy \
+  -st DNA \
+  -nt 20 \
+  -m MFP+ASC \
+  -bb 1000

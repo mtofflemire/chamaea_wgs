@@ -1,0 +1,28 @@
+# 14_pca_vcf_to_bed_then_pca.pbs
+#!/bin/bash
+#PBS -V
+#PBS -N pca_bed
+#PBS -l nodes=1:ppn=8,mem=32gb,walltime=02:00:00
+#PBS -q batch
+#PBS -o /usr/scratch2/userdata2/mtofflemire/projects/picoides_genotyping/out/pca_bed.log
+#PBS -j oe
+
+set -euo pipefail
+cd "$PBS_O_WORKDIR"
+
+# activate plink env
+source ~/miniconda3/etc/profile.d/conda.sh
+conda activate plink19
+
+#for local machine pathway setup
+#change pathways if using cluster
+OUT2='/Users/michaeltofflemire/Mtofflemire Dropbox/Michael Tofflemire/Projects/ccgp_chamaea/out/01_VARIANTS/GATK_QC/AUTOSOMES'
+OUTPCA='/Users/michaeltofflemire/Mtofflemire Dropbox/Michael Tofflemire/Projects/ccgp_chamaea/out/02_ANALYSIS/1_PCA/autoAll'
+mkdir -p "$OUTPCA"
+VCF=$OUT2/Chamaea_autoALL_filteredQC_maf0.05_hwe0.01_prune1kb.vcf.gz
+BED=$OUTPCA/Chamaea_autoALL_filteredQC_maf0.05_hwe0.01_prune1kb
+PCA=$OUTPCA/Chamaea_autoALL_filteredQC_maf0.05_hwe0.01_prune1kb.pca
+
+plink --vcf "$VCF" --double-id --allow-extra-chr --make-bed --threads 8 --out "$BED"
+
+plink --bfile "$BED" --allow-extra-chr --pca 20 header tabs --threads 8 --out "$PCA"
