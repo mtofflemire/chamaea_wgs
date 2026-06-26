@@ -1,0 +1,17 @@
+#!/bin/bash
+#PBS -V
+#PBS -l nodes=node18:ppn=56,mem=128gb
+#PBS -l walltime=500:00:00
+#PBS -N chamaea_dapc
+#PBS -j oe
+#PBS -o /usr/scratch2/userdata2/mtofflemire/projects/chamaea/dapc/dapc.log
+#PBS -q batch
+
+set -eo pipefail
+
+cd /usr/scratch2/userdata2/mtofflemire/projects/chamaea/dapc || exit 1
+
+source ~/miniconda3/etc/profile.d/conda.sh
+conda activate rda_env
+
+Rscript 05_dapc.R

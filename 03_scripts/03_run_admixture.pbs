@@ -14,9 +14,12 @@ cd "$PBS_O_WORKDIR" || exit 1
 source ~/miniconda3/etc/profile.d/conda.sh
 conda activate plink19
 
-VCF="/usr/scratch2/userdata2/mtofflemire/projects/chamaea/2026_WD/01_VARIANTS/Chamaea_autoALL_filteredQC_maf0.05_hwe0.01_prune1kb.vcf.gz"
+
+
+#define paths
+VCF="/usr/scratch2/userdata2/mtofflemire/projects/chamaea/2026_WD/01_VARIANTS/Chamaea_auto_filteredQC_maf0.05_hwe0.01_prune1kb.vcf.gz"
 RESULTS="/usr/scratch2/userdata2/mtofflemire/projects/chamaea/2026_WD/03_admixture"
-PREFIX="Chamaea_autoALL_filteredQC_maf0.05_hwe0.01_prune1kb"
+PREFIX="Chamaea_auto_filteredQC_maf0.05_hwe0.01_prune1kb"
 BED_PREFIX="${RESULTS}/${PREFIX}"
 ADMIX="/usr/scratch2/userdata2/mtofflemire/softs/admixture_linux-1.3.1/admixture"
 
@@ -39,26 +42,14 @@ awk 'BEGIN { OFS="\t" } { $1 = 0; print }' "${BED_PREFIX}.bim" > "${BED_PREFIX}.
 mv "${BED_PREFIX}.bim.tmp" "${BED_PREFIX}.bim"
 
 
-#use this code below for more simples runs like 1 single run
-# cd "$RESULTS" || exit 1
-#
-# for K in {1..10}; do
-#     "$ADMIX" -s 43 --cv=10 -j48 "${BED_PREFIX}.bed" "$K" > "log${K}.out"
-# done
 
 
+#run admixture
+SEED=43
+RUN_DIR="${RESULTS}/seed${SEED}"
+mkdir -p "$RUN_DIR"
+cd "$RUN_DIR" || exit 1
 
-#run 10 replicates of admixture
 for K in {1..10}; do
-    for REP in {1..10}; do
-        
-        SEED=$((1000 + K * 100 + REP))
-        RUN_DIR="${RESULTS}/K${K}/rep${REP}"
-        
-        mkdir -p "$RUN_DIR"
-        cd "$RUN_DIR" || exit 1
-        
-        "$ADMIX" -s "$SEED" --cv=10 -j48 "${BED_PREFIX}.bed" "$K" > "log${K}_rep${REP}.out"
-        
-    done
+    "$ADMIX" -s "$SEED" --cv=10 -j48 "${BED_PREFIX}.bed" "$K" > "log${K}_seed${SEED}.out"
 done

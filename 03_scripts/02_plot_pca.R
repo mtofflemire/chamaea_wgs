@@ -22,21 +22,22 @@ script_dir <- if (length(script_arg)) {
 
 project_dir <- normalizePath(file.path(script_dir, ".."), mustWork = TRUE)
 base_dir <- file.path(project_dir, "4_analyses", "01_pca")
+prefix <- "Chamaea_auto_filteredQC_maf0.05_hwe0.01_prune1kb"
 
-pca_eigenvec_file <- file.path(base_dir, "Chamaea_autoALL_filteredQC_maf0.05_hwe0.01_prune1kb.pca.eigenvec")
-pca_eigenval_file <- file.path(base_dir, "Chamaea_autoALL_filteredQC_maf0.05_hwe0.01_prune1kb.pca.eigenval")
+pca_eigenvec_file <- file.path(base_dir, paste0(prefix, ".pca.eigenvec"))
+pca_eigenval_file <- file.path(base_dir, paste0(prefix, ".pca.eigenval"))
 metadata_file <- file.path(
   project_dir, "1_Meta",
   "CCGP_Metadata_Submission_C_fasciata_Nachman-Bowie_v2_oct2022_MAT.csv"
 )
 range_file <- file.path(
-  project_dir, "2_data", "SppDataRequest", "SppDataRequest.shp"
+  project_dir, "2_data", "range_polygon", "SppDataRequest.shp"
 )
 
-output_3d_pdf <- file.path(base_dir, "Chamaea_autoALL_filteredQC_maf0.05_hwe0.01_prune1kb_PCA_3D_plot.pdf")
-output_3d_png <- file.path(base_dir, "Chamaea_autoALL_filteredQC_maf0.05_hwe0.01_prune1kb_PCA_3D_plot.png")
-output_interp_pdf <- file.path(base_dir, "Chamaea_autoALL_filteredQC_maf0.05_hwe0.01_prune1kb_PC1_interpolated_map.pdf")
-output_interp_png <- file.path(base_dir, "Chamaea_autoALL_filteredQC_maf0.05_hwe0.01_prune1kb_PC1_interpolated_map.png")
+output_3d_pdf <- file.path(base_dir, paste0(prefix, "_PCA_3D_plot.pdf"))
+output_3d_png <- file.path(base_dir, paste0(prefix, "_PCA_3D_plot.png"))
+output_interp_pdf <- file.path(base_dir, paste0(prefix, "_PC1_interpolated_map.pdf"))
+output_interp_png <- file.path(base_dir, paste0(prefix, "_PC1_interpolated_map.png"))
 
 # load data
 pca_data <- fread(pca_eigenvec_file, header = TRUE)
@@ -60,7 +61,7 @@ ecoregion_colours <- c(
   "orangered", "#4DAF4A", "#984EA3", "red3", "#FFFF33"
 )
 
-ecoregion_colours <- alpha(ecoregion_colours, 0.7)
+ecoregion_colours <- alpha(ecoregion_colours, 1)
 
 # 3D PCA plot
 plot_pca_3d <- function(data, legend_inset = c(0.055, 0.045)) {
@@ -111,11 +112,11 @@ plot_pca_3d <- function(data, legend_inset = c(0.055, 0.045)) {
   )
 }
 
-pdf(output_3d_pdf, width = 9.3, height = 4.95)
+pdf(output_3d_pdf, width = 8.75, height = 5.03)
 plot_pca_3d(merged_data, legend_inset = c(0.10, 0.005))
 dev.off()
 
-png(output_3d_png, width = 3441, height = 1832, res = 300)
+png(output_3d_png, width = 3235, height = 1863, res = 300)
 plot_pca_3d(merged_data)
 dev.off()
 
@@ -170,8 +171,8 @@ interp_data <- interp_data[inside_wrentit_range, ]
 plot_pc1_map <-
   ggplot() +
   borders("world", regions = c("USA", "Mexico"),
-          fill = "gray95", colour = "gray20", linewidth = 0.3) +
-  borders("state", colour = "gray20", linewidth = 0.15) +
+          fill = "gray95", colour = "gray20", linewidth = 0.4) +
+  borders("state", colour = "gray20", linewidth = 0.23) +
   geom_raster(data = interp_data,
               aes(x = Longitude, y = Latitude, fill = PC1),
               alpha = 0.8) +
@@ -183,7 +184,8 @@ plot_pc1_map <-
     axis.text = element_blank(),
     axis.ticks = element_blank(),
     axis.title = element_blank(),
-    legend.position = "right"
+    legend.position = "right",
+    panel.border = element_rect(colour = "black", fill = NA, linewidth = 0.7)
   )
 
 ggsave(output_interp_pdf, plot = plot_pc1_map, width = 5, height = 7)
@@ -226,18 +228,19 @@ for (pkg in required_packages) {
 
 # file paths
 base_dir <- file.path(project_dir, "4_analyses", "01_pca")
+prefix <- "Chamaea_auto_filteredQC_maf0.05_hwe0.01_prune1kb"
 
-pca_eigenvec_file <- file.path(base_dir, "Chamaea_autoALL_filteredQC_maf0.05_hwe0.01_prune1kb.pca.eigenvec")
-pca_eigenval_file <- file.path(base_dir, "Chamaea_autoALL_filteredQC_maf0.05_hwe0.01_prune1kb.pca.eigenval")
+pca_eigenvec_file <- file.path(base_dir, paste0(prefix, ".pca.eigenvec"))
+pca_eigenval_file <- file.path(base_dir, paste0(prefix, ".pca.eigenval"))
 metadata_file <- file.path(
   project_dir, "1_Meta",
   "CCGP_Metadata_Submission_C_fasciata_Nachman-Bowie_v2_oct2022_MAT.csv"
 )
 
-output_3d_pdf <- file.path(base_dir, "Chamaea_autoALL_filteredQC_maf0.05_hwe0.01_prune1kb_PCA_3D_plot_subspecies.pdf")
-output_3d_png <- file.path(base_dir, "Chamaea_autoALL_filteredQC_maf0.05_hwe0.01_prune1kb_PCA_3D_plot_subspecies.png")
-output_interp_pdf <- file.path(base_dir, "Chamaea_autoALL_filteredQC_maf0.05_hwe0.01_prune1kb_PC1_interpolated_map.pdf")
-output_interp_png <- file.path(base_dir, "Chamaea_autoALL_filteredQC_maf0.05_hwe0.01_prune1kb_PC1_interpolated_map.png")
+output_3d_pdf <- file.path(base_dir, paste0(prefix, "_PCA_3D_plot_subspecies.pdf"))
+output_3d_png <- file.path(base_dir, paste0(prefix, "_PCA_3D_plot_subspecies.png"))
+output_interp_pdf <- file.path(base_dir, paste0(prefix, "_PC1_interpolated_map.pdf"))
+output_interp_png <- file.path(base_dir, paste0(prefix, "_PC1_interpolated_map.png"))
 
 # load data
 pca_data <- fread(pca_eigenvec_file, header = TRUE)
@@ -329,10 +332,10 @@ plot_pca_3d <- function(data, legend_inset = c(0.055, 0.045)) {
   )
 }
 
-pdf(output_3d_pdf, width = 10.3, height = 5.45)
+pdf(output_3d_pdf, width = 9.68, height = 5.55)
 plot_pca_3d(merged_data, legend_inset = c(0.10, 0.005))
 dev.off()
 
-png(output_3d_png, width = 3430, height = 1815, res = 300)
+png(output_3d_png, width = 3224, height = 1847, res = 300)
 plot_pca_3d(merged_data)
 dev.off()
